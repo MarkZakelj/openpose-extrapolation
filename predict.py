@@ -1,12 +1,13 @@
 import torch
 from fastapi import FastAPI
 from model import LitAutoEncoder
-from schema import InferenceRequest, Keypoint
+from schema import InferenceRequest, Keypoint, InferenceResult
 
-best_model_path = 'lightning_logs/version_5/checkpoints/epoch=9-step=3050.ckpt'
+best_model_path = 'lightning_logs/version_6/checkpoints/epoch=9-step=6090.ckpt'
 
 model = LitAutoEncoder.load_from_checkpoint(best_model_path)
 model.eval()
+model.to('cpu')
 
 
 app = FastAPI()
@@ -16,18 +17,20 @@ def health():
     return "OK"
 
 @app.post("/predict")
-def predict(input: InferenceRequest):
-    ps = []
-    for keypoint in input.keypoints:
-        if keypoint.visible:
-            ps.extend([keypoint.x, keypoint.y])
-        else:
-            ps.extend([-1.0, -1.0])
-    ps.append(input.height / input.width)
-    x = torch.tensor([ps])
+def predict(input: InferenceRequest) -> InferenceResult:
+    x = []
+    for body in input.keypoints:
+        ps = []
+        for keypoint in body:
+            if keypoint.visible:
+                ps.extend([keypoint.x, keypoint.y])
+            else:
+                ps.extend([-1.0, -1.0])
+        ps.append(input.height / input.width)
+        x.append(ps)
+    x = torch.tensor(x).to('cpu')
     with torch.no_grad():
         y_hat = model(x)
-    y_hat = y_hat[0][:-1].reshape(-1, 2).tolist()
     keypoints = []
     for row in y_hat:
         points = row[:-1].reshape(-1, 2).tolist()

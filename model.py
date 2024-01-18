@@ -4,17 +4,24 @@ import lightning as L
 class LitAutoEncoder(L.LightningModule):
     def __init__(self):
         super().__init__()
-        self.encoder = nn.Sequential(nn.Linear(37, 16), nn.ReLU(), nn.Linear(16, 4), nn.ReLU())
-        self.decoder = nn.Sequential(nn.Linear(4, 16), nn.ReLU(), nn.Linear(16, 37))
+        self.encoder = nn.Sequential(nn.Linear(37, 64), nn.ReLU(), 
+                                     nn.Linear(64, 64), nn.ReLU(), 
+                                     nn.Linear(64, 64), nn.ReLU())
+        self.decoder = nn.Sequential(nn.Linear(64, 64), nn.ReLU(), 
+                                     nn.Linear(64, 37))
+    
+    def forward(self, x):
+        mask = x != -1.0
+        z = self.encoder(x)
+        x_hat = self.decoder(z)
+        x_hat[mask] = x[mask]
+        return x_hat
 
     def training_step(self, batch, batch_idx):
-        # training_step defines the train loop.
-        # it is independent of forward
         x, y = batch
         z = self.encoder(x)
         x_hat = self.decoder(z)
         loss = nn.functional.mse_loss(x_hat, y)
-        # Logging to TensorBoard (if installed) by default
         self.log("train_loss", loss)
         return loss
 
