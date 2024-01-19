@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from model import LitAutoEncoder
 from schema import InferenceRequest, Keypoint, InferenceResult
 
-best_model_path = 'lightning_logs/version_6/checkpoints/epoch=9-step=6090.ckpt'
+best_model_path = 'models/skeleton-extrapolation.ckpt'
 
 model = LitAutoEncoder.load_from_checkpoint(best_model_path)
 model.eval()
