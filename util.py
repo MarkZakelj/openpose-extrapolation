@@ -2,11 +2,15 @@ import math
 import cv2
 import numpy as np
 from typing import List, NamedTuple
+from PIL import Image, ImageDraw
 
 class Keypoint(NamedTuple):
     x: float
     y: float
     visible: bool
+
+def translate_to_keyppoints(pose):
+    return [Keypoint(x, y, True) if 0.0 < x < 1.0 and 0.0 < y < 1.0 else None for x, y in pose]
 
 
 def draw_bodypose(canvas: np.ndarray, keypoints: List[Keypoint]) -> np.ndarray:
@@ -65,3 +69,36 @@ def draw_bodypose(canvas: np.ndarray, keypoints: List[Keypoint]) -> np.ndarray:
         cv2.circle(canvas, (int(x), int(y)), 4, color, thickness=-1)
 
     return canvas
+
+def create_image_grid_with_borders(images, rows, cols, border=1, border_color='white'):
+    if not images:
+        raise ValueError("No images to compose.")
+
+    # Assuming all images are the same size
+    w, h = images[0].size
+
+    # Size of the grid, accounting for borders
+    grid_width = cols * w + (cols - 1) * border
+    grid_height = rows * h + (rows - 1) * border
+
+    # Create a new image with a white background
+    grid_img = Image.new('RGB', (grid_width, grid_height), color='white')
+    draw = ImageDraw.Draw(grid_img)
+
+    for i, img in enumerate(images):
+        # Calculate grid position
+        grid_x = (i % cols) * (w + border)
+        grid_y = (i // cols) * (h + border)
+
+        # Paste the image into position
+        grid_img.paste(img, (grid_x, grid_y))
+
+        # Draw vertical borders
+        if (i % cols) != (cols - 1):  # Avoid drawing on the last column
+            draw.line([(grid_x + w, grid_y), (grid_x + w, grid_y + h)], fill=border_color, width=border)
+
+        # Draw horizontal borders
+        if (i // cols) != (rows - 1):  # Avoid drawing on the last row
+            draw.line([(grid_x, grid_y + h), (grid_x + w, grid_y + h)], fill=border_color, width=border)
+
+    return grid_img
