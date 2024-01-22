@@ -7,19 +7,19 @@ from model import LitAutoEncoder
 from torch.utils.data import Subset
 import torch
 
-DATA_VERSION = 'v2'
+DATA_VERSION = 'v3'
 DATA_DIR = f'data/{DATA_VERSION}'
 
 
 def main():
-    autoencoder = LitAutoEncoder(dropout=0.5)
+    autoencoder = LitAutoEncoder(dropout=0.5, weight_decay=0.001)
     dataset = OpenPoseDataset(DATA_DIR)
 
     checkpoint_callback = ModelCheckpoint(
         monitor='val_loss',
         mode='min',
         save_top_k=3,
-        filename='{epoch}-{val_loss:.2f}'
+        filename='{epoch}-{val_loss:.6f}'
     )
 
     total_size = len(dataset)
@@ -42,9 +42,9 @@ def main():
     valid_loader = DataLoader(valid_dataset, batch_size=512, shuffle=False, num_workers=8, persistent_workers=True)
     test_loader = DataLoader(test_dataset, batch_size=512, shuffle=False, num_workers=8, persistent_workers=True)
 
-    trainer = L.Trainer(max_epochs=7, callbacks=[checkpoint_callback])
+    trainer = L.Trainer(max_epochs=8, callbacks=[checkpoint_callback])
     trainer.fit(model=autoencoder, train_dataloaders=train_loader, val_dataloaders=valid_loader)
-    trainer.test(model=autoencoder, dataloaders=test_loader)
+    trainer.test(ckpt_path='best', dataloaders=test_loader)
 
 
 if __name__=='__main__':
