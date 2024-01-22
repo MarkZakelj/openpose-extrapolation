@@ -2,29 +2,46 @@ from torch import nn, optim
 import lightning as L
 
 class LitAutoEncoder(L.LightningModule):
-    def __init__(self):
+    def __init__(self, learning_rate=1e-3, weight_decay=1e-5, dropout=0.2):
         super().__init__()
-        self.encoder = nn.Sequential(nn.Linear(37, 64), nn.ReLU(), 
-                                     nn.Linear(64, 64), nn.ReLU(), 
-                                     nn.Linear(64, 64), nn.ReLU())
-        self.decoder = nn.Sequential(nn.Linear(64, 64), nn.ReLU(), 
+        self.save_hyperparameters()
+        self.layers = nn.Sequential(nn.Linear(37, 64), nn.ReLU(), 
+                                     nn.Linear(64, 64), nn.ReLU(), nn.Dropout(dropout),
+                                     nn.Linear(64, 128), nn.ReLU(), nn.Dropout(dropout),
+                                     nn.Linear(128, 128), nn.ReLU(), nn.Dropout(dropout),
+                                     nn.Linear(128, 64), nn.ReLU(), 
                                      nn.Linear(64, 37))
     
     def forward(self, x):
-        mask = x != -1.0
-        z = self.encoder(x)
-        x_hat = self.decoder(z)
+        # inference
+        mask = x != -10.0
+        x_hat = self.layers(x)
         x_hat[mask] = x[mask]
         return x_hat
 
     def training_step(self, batch, batch_idx):
         x, y = batch
-        z = self.encoder(x)
-        x_hat = self.decoder(z)
+        x_hat = self.layers(x)
         loss = nn.functional.mse_loss(x_hat, y)
         self.log("train_loss", loss)
         return loss
+    
+    def test_step(self, batch, batch_idx):
+        x, y = batch
+        x_hat = self.layers(x)
+        loss = nn.functional.mse_loss(x_hat, y)
+        self.log("test_loss", loss)
+        return loss
+    
+    def validation_step(self, batch, batch_idx):
+        x, y = batch
+        x_hat = self.layers(x)
+        loss = nn.functional.mse_loss(x_hat, y)
+        self.log("val_loss", loss)
+        return loss
 
     def configure_optimizers(self):
-        optimizer = optim.Adam(self.parameters(), lr=1e-4, weight_decay=1e-5)
+        optimizer = optim.AdamW(self.parameters(), 
+                               lr=self.hparams.learning_rate, 
+                               weight_decay=self.hparams.weight_decay)
         return optimizer

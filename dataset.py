@@ -7,10 +7,10 @@ from einops import rearrange
 
 
 class OpenPoseDataset(Dataset):
-    def __init__(self, data_dir, transform=None):
-        self.poses = torch.load(os.path.join(data_dir, 'poses_keypoints.pt'))
-        self.poses_missing = torch.load(os.path.join(data_dir, 'poses_with_missing.pt'))
-        self.ratios = torch.load(os.path.join(data_dir, 'poses_ratios.pt'))
+    def __init__(self, data_dir):
+        self.poses = torch.load(os.path.join(data_dir, 'poses.pt'))
+        self.poses_missing = torch.load(os.path.join(data_dir, 'poses_missing.pt'))
+        self.ratios = torch.load(os.path.join(data_dir, 'ratios.pt'))
         self.data_dir = data_dir
 
     def __len__(self):
