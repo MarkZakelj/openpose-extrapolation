@@ -3,7 +3,8 @@ from fastapi import FastAPI
 from model import LitAutoEncoder
 from schema import InferenceRequest, Keypoint, InferenceResult
 
-best_model_path = 'models/skeleton-extrapolation.ckpt'
+model_name = 'skeleton-extrapolation.ckpt'
+best_model_path = f'models/{model_name}'
 
 model = LitAutoEncoder.load_from_checkpoint(best_model_path)
 model.eval()
