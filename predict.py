@@ -14,8 +14,9 @@ model.to('cpu')
 # read xgboost models
 xgboost_models = {}
 for mod in range(36):
-    model = xgb.load_model(f'models/xgboost/v4/model_{mod}.json')
-    xgboost_models[mod] = model
+    booster = xgb.Booster()
+    booster.load_model(f'models/xgboost/v4/model_{mod}.json')
+    xgboost_models[mod] = booster
 
 
 app = FastAPI()
@@ -59,18 +60,21 @@ def predict(input: InferenceRequest) -> InferenceResult:
     for body in input.keypoints:
         x = []
         missing = []
-        neckx, necky = body[1]
+        neckx = body[1].x
+        necky = body[1].y
         for i, keypoint in enumerate(body):
             if keypoint.visible:
                 x.extend([keypoint.x - neckx, keypoint.y - necky])
             else:
                 x.extend([-10.0, -10.0])
-                missing.append((2 * i, 2 * i + 1))
+                missing.append(i)
         inp = xgb.DMatrix([x])
-        for (px, py) in missing:
-            x[px // 2][0] = xgboost_models[px].predict(inp)[0]
-            x[px // 2][1] = xgboost_models[py].predict(inp)[0]
-        keypoints.append([Keypoint(x=point[0] + neckx, y=point[1] + necky, visible=True) for point in x])
+        new_body = [Keypoint(x=body[i].x, y=body[i].y, visible=body[i].visible) for i in range(18)]
+        print(inp)
+        for i in missing:
+            new_body[i].x = xgboost_models[i*2].predict(inp)[0] + neckx
+            new_body[i].y = xgboost_models[i*2+1].predict(inp)[0] + necky
+        keypoints.append(new_body)
     return {"keypoints": keypoints}
         
         
