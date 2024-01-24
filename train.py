@@ -7,7 +7,7 @@ from model import LitAutoEncoder
 from torch.utils.data import Subset
 import torch
 
-DATA_VERSION = 'v5'
+DATA_VERSION = 'v6'
 DATA_DIR = f'data/{DATA_VERSION}'
 
 
