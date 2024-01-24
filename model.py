@@ -5,12 +5,11 @@ class LitAutoEncoder(L.LightningModule):
     def __init__(self, learning_rate=1e-3, weight_decay=1e-5, dropout=0.2):
         super().__init__()
         self.save_hyperparameters()
-        self.layers = nn.Sequential(nn.Linear(37, 64), nn.ReLU(), 
+        self.layers = nn.Sequential(nn.Linear(36, 36), nn.ReLU(), 
+                                     nn.Linear(36, 64), nn.ReLU(), nn.Dropout(dropout),
                                      nn.Linear(64, 64), nn.ReLU(), nn.Dropout(dropout),
-                                     nn.Linear(64, 128), nn.ReLU(), nn.Dropout(dropout),
-                                     nn.Linear(128, 128), nn.ReLU(), nn.Dropout(dropout),
-                                     nn.Linear(128, 64), nn.ReLU(), 
-                                     nn.Linear(64, 37))
+                                     nn.Linear(64, 36), nn.ReLU(), nn.Dropout(dropout),
+                                     nn.Linear(36, 36))
     
     def forward(self, x):
         # inference

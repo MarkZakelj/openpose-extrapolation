@@ -7,10 +7,9 @@ from einops import rearrange
 
 
 class OpenPoseDataset(Dataset):
-    def __init__(self, data_dir):
-        self.poses = torch.load(os.path.join(data_dir, 'poses.pt'))
-        self.poses_missing = torch.load(os.path.join(data_dir, 'poses_missing.pt'))
-        self.ratios = torch.load(os.path.join(data_dir, 'ratios.pt'))
+    def __init__(self, data_dir, data_type):
+        self.poses = torch.load(os.path.join(data_dir, f'poses_{data_type}.pt'))
+        self.poses_missing = torch.load(os.path.join(data_dir, f'poses_missing_{data_type}.pt'))
         self.data_dir = data_dir
 
     def __len__(self):
@@ -19,8 +18,7 @@ class OpenPoseDataset(Dataset):
     def __getitem__(self, idx):
         pose = self.poses[idx]
         pose_missing = self.poses_missing[idx]
-        ratio = torch.tensor([self.ratios[idx]])
-        return torch.cat((pose_missing, ratio)), torch.cat((pose, ratio))
+        return pose_missing, pose
     
 def main():
     dataset = OpenPoseDataset('data')

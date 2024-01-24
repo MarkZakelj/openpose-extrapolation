@@ -7,13 +7,15 @@ from model import LitAutoEncoder
 from torch.utils.data import Subset
 import torch
 
-DATA_VERSION = 'v3'
+DATA_VERSION = 'v5'
 DATA_DIR = f'data/{DATA_VERSION}'
 
 
 def main():
     autoencoder = LitAutoEncoder(dropout=0.5, weight_decay=0.001)
-    dataset = OpenPoseDataset(DATA_DIR)
+    dataset_train = OpenPoseDataset(DATA_DIR, 'train')
+    dataset_valid = OpenPoseDataset(DATA_DIR, 'valid')
+    dataset_test = OpenPoseDataset(DATA_DIR, 'test')
 
     checkpoint_callback = ModelCheckpoint(
         monitor='val_loss',
@@ -22,25 +24,10 @@ def main():
         filename='{epoch}-{val_loss:.6f}'
     )
 
-    total_size = len(dataset)
-    train_size = int(0.7 * total_size)
-    valid_size = int(0.15 * total_size)
 
-    # Create indices for train, validation, test
-    indices = torch.randperm(total_size).tolist()
-    train_indices = indices[:train_size]
-    valid_indices = indices[train_size:train_size+valid_size]
-    test_indices = indices[train_size+valid_size:]
-
-    # Create subsets
-    train_dataset = Subset(dataset, train_indices)
-    valid_dataset = Subset(dataset, valid_indices)
-    test_dataset = Subset(dataset, test_indices)
-
-
-    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True, num_workers=4, persistent_workers=True)
-    valid_loader = DataLoader(valid_dataset, batch_size=512, shuffle=False, num_workers=8, persistent_workers=True)
-    test_loader = DataLoader(test_dataset, batch_size=512, shuffle=False, num_workers=8, persistent_workers=True)
+    train_loader = DataLoader(dataset_train, batch_size=32, shuffle=True, num_workers=4, persistent_workers=True)
+    valid_loader = DataLoader(dataset_valid, batch_size=512, shuffle=False, num_workers=8, persistent_workers=True)
+    test_loader = DataLoader(dataset_test, batch_size=512, shuffle=False, num_workers=8, persistent_workers=True)
 
     trainer = L.Trainer(max_epochs=8, callbacks=[checkpoint_callback])
     trainer.fit(model=autoencoder, train_dataloaders=train_loader, val_dataloaders=valid_loader)
