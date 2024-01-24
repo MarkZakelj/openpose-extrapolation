@@ -2,7 +2,7 @@ import torch
 from fastapi import FastAPI
 from model import LitAutoEncoder
 from schema import InferenceRequest, Keypoint, InferenceResult
-import xgboost as xgb
+# import xgboost as xgb
 
 model_name = 'skeleton-extrapolation.ckpt'
 best_model_path = f'models/{model_name}'
@@ -12,11 +12,11 @@ model.eval()
 model.to('cpu')
 
 # read xgboost models
-xgboost_models = {}
-for mod in range(36):
-    booster = xgb.Booster()
-    booster.load_model(f'models/xgboost/v4/model_{mod}.json')
-    xgboost_models[mod] = booster
+# xgboost_models = {}
+# for mod in range(36):
+#     booster = xgb.Booster()
+#     booster.load_model(f'models/xgboost/v4/model_{mod}.json')
+#     xgboost_models[mod] = booster
 
 
 app = FastAPI()
@@ -54,28 +54,28 @@ def predict(input: InferenceRequest) -> InferenceResult:
         keypoints.append(translated_points)
     return {"keypoints": keypoints}
 
-@app.post('/predict-xgboost')
-def predict(input: InferenceRequest) -> InferenceResult:
-    keypoints = []
-    for body in input.keypoints:
-        x = []
-        missing = []
-        neckx = body[1].x
-        necky = body[1].y
-        for i, keypoint in enumerate(body):
-            if keypoint.visible:
-                x.extend([keypoint.x - neckx, keypoint.y - necky])
-            else:
-                x.extend([-10.0, -10.0])
-                missing.append(i)
-        inp = xgb.DMatrix([x])
-        new_body = [Keypoint(x=body[i].x, y=body[i].y, visible=body[i].visible) for i in range(18)]
-        print(inp)
-        for i in missing:
-            new_body[i].x = xgboost_models[i*2].predict(inp)[0] + neckx
-            new_body[i].y = xgboost_models[i*2+1].predict(inp)[0] + necky
-        keypoints.append(new_body)
-    return {"keypoints": keypoints}
+# @app.post('/predict-xgboost')
+# def predict(input: InferenceRequest) -> InferenceResult:
+#     keypoints = []
+#     for body in input.keypoints:
+#         x = []
+#         missing = []
+#         neckx = body[1].x
+#         necky = body[1].y
+#         for i, keypoint in enumerate(body):
+#             if keypoint.visible:
+#                 x.extend([keypoint.x - neckx, keypoint.y - necky])
+#             else:
+#                 x.extend([-10.0, -10.0])
+#                 missing.append(i)
+#         inp = xgb.DMatrix([x])
+#         new_body = [Keypoint(x=body[i].x, y=body[i].y, visible=body[i].visible) for i in range(18)]
+#         print(inp)
+#         for i in missing:
+#             new_body[i].x = xgboost_models[i*2].predict(inp)[0] + neckx
+#             new_body[i].y = xgboost_models[i*2+1].predict(inp)[0] + necky
+#         keypoints.append(new_body)
+#     return {"keypoints": keypoints}
         
         
         
