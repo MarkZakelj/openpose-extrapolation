@@ -7,7 +7,7 @@ from model import LitAutoEncoder
 from torch.utils.data import Subset
 import torch
 
-DATA_VERSION = 'v6'
+DATA_VERSION = 'v7'
 DATA_DIR = f'data/{DATA_VERSION}'
 
 
@@ -21,7 +21,7 @@ def main():
         monitor='val_loss',
         mode='min',
         save_top_k=3,
-        filename='{epoch}-{val_loss:.6f}'
+        filename=DATA_VERSION+'-{epoch}-{val_loss:.6f}'
     )
 
 

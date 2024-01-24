@@ -7,8 +7,7 @@ class LitAutoEncoder(L.LightningModule):
         self.save_hyperparameters()
         self.layers = nn.Sequential(nn.Linear(36, 36), nn.ReLU(), 
                                      nn.Linear(36, 64), nn.ReLU(), nn.Dropout(dropout),
-                                     nn.Linear(64, 36), nn.ReLU(), nn.Dropout(dropout),
-                                     nn.Linear(36, 36))
+                                     nn.Linear(64, 36))
     
     def forward(self, x):
         # inference
