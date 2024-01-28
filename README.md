@@ -1,4 +1,4 @@
-# OpenPose Skeleton Keypoiny Extrapolation
+# OpenPose Skeleton Keypoint Extrapolation
 
 ## Overview
 This repository hosts a streamlined neural network designed specifically for extrapolating non-visible keypoints in OpenPose skeleton representations. It serves as a robust solution for enhancing keypoint detection, particularly in scenarios where certain body parts are obscured or off-screen.
