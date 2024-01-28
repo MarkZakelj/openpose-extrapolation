@@ -1,15 +1,12 @@
 import torch
-from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms
-import os
-import pandas as pd
-from einops import rearrange
+from torch.utils.data import Dataset
+from pathlib import Path
 
 
 class OpenPoseDataset(Dataset):
     def __init__(self, data_dir, data_type):
-        self.poses = torch.load(os.path.join(data_dir, f'poses_{data_type}.pt'))
-        self.poses_missing = torch.load(os.path.join(data_dir, f'poses_missing_{data_type}.pt'))
+        self.poses = torch.load(Path(data_dir, f'poses_{data_type}.pt'))
+        self.poses_missing = torch.load(Path(data_dir, f'poses_missing_{data_type}.pt'))
         self.data_dir = data_dir
 
     def __len__(self):

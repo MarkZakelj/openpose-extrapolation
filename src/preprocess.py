@@ -1,13 +1,12 @@
 import pandas as pd
 import torch
 from einops import rearrange
-from src.util import draw_bodypose
-from PIL import Image
 import numpy as np
-import matplotlib.pyplot as plt
 import math
 import os
 import random
+from pathlib import Path
+from paths import DATA_DIR
 
 VERSION = 'v7'
 random.seed(42)
@@ -31,7 +30,7 @@ def calculate_relative_points(poses):
     res -= poses[:, NECK:NECK+1, :] # subtract neck
     return res
 
-df = pd.read_csv('data/poses.csv')
+df = pd.read_csv(Path(DATA_DIR, 'poses.csv'))
 df = df[~(df['class'].isin(['squat']))] # remove squats
 df = df.drop('class', axis=1) # remove class column
 df = df[~(df == 0).any(axis=1)] # remove rows with any zeros - undefined ponints
@@ -45,7 +44,7 @@ p1 = poses.clone()
 p1[:, :, 0] *= -1
 poses_flipped = torch.cat([poses, p1], dim=0)
 
-# augument the dataset with scaling from 0.05 to 3.55 factors
+# augument the dataset with scaling from 0.05 to 3.55
 get_scale = lambda : (random.betavariate(alpha=0.9, beta=1.1)) * 3.5 + 0.05
 REPETITIONS = 2
 res = []
@@ -57,13 +56,13 @@ for n in range(REPETITIONS):
 poses_scaled = torch.cat(res, dim=0)
 
 # augument the dataset with x and y axis rotation up to +- 45 degrees
+# this matrix represents y-axis rotation followed by x-axis rotation
 def rotate_both_axis(thetax: float, thetay: float):
     t = [
-        [math.cos(thetay), math.sin(thetay)*math.sin(thetax)],
+        [math.cos(thetay), math.sin(thetay) * math.sin(thetax)],
         [0, math.cos(thetax)]
     ]
     return t
-
 ROTATION_REPETITIONS = 2
 get_rotationy = lambda: (random.betavariate(alpha=2.5, beta=2.5) - 0.5) * np.pi / 2
 get_rotationx = lambda: (random.betavariate(alpha=7, beta=7) - 0.5) * np.pi / 2
@@ -74,7 +73,6 @@ for n in range(ROTATION_REPETITIONS):
     p1 = torch.matmul(p1, matrices)
     res.append(p1)
 poses_scaled = torch.cat(res, dim=0)
-
 
 # augument dataset based on x-scaling
 get_scale = lambda : (random.betavariate(alpha=2, beta=2)) + 0.5
@@ -148,7 +146,9 @@ assert poses_scaled_rearranged.shape[1] == poses_missing_rearranged.shape[1] == 
 mask = poses_missing_rearranged != -10.0
 assert (poses_missing_rearranged[mask] == poses_scaled_rearranged[mask]).all()
 
-data_dir = f'data/{VERSION}'
+data_dir = Path(DATA_DIR, VERSION)
+data_dir.mkdir(exist_ok=True)
+
 # split into train, validation and test
 total_size = poses_missing_rearranged.shape[0]
 train_size = int(0.7 * total_size)
@@ -160,12 +160,10 @@ train_indices = indices[:train_size]
 valid_indices = indices[train_size:train_size+valid_size]
 test_indices = indices[train_size+valid_size:]
 
-os.makedirs(data_dir, exist_ok=True)
-
 # save shuffled data
-torch.save(poses_scaled_rearranged[train_indices], os.path.join(data_dir, 'poses_train.pt'))
-torch.save(poses_scaled_rearranged[valid_indices], os.path.join(data_dir, 'poses_valid.pt'))
-torch.save(poses_scaled_rearranged[test_indices], os.path.join(data_dir, 'poses_test.pt'))
-torch.save(poses_missing_rearranged[train_indices], os.path.join(data_dir, 'poses_missing_train.pt'))
-torch.save(poses_missing_rearranged[valid_indices], os.path.join(data_dir, 'poses_missing_valid.pt'))
-torch.save(poses_missing_rearranged[test_indices], os.path.join(data_dir, 'poses_missing_test.pt'))
+torch.save(poses_scaled_rearranged[train_indices], Path(data_dir, 'poses_train.pt'))
+torch.save(poses_scaled_rearranged[valid_indices], Path(data_dir, 'poses_valid.pt'))
+torch.save(poses_scaled_rearranged[test_indices], Path(data_dir, 'poses_test.pt'))
+torch.save(poses_missing_rearranged[train_indices], Path(data_dir, 'poses_missing_train.pt'))
+torch.save(poses_missing_rearranged[valid_indices], Path(data_dir, 'poses_missing_valid.pt'))
+torch.save(poses_missing_rearranged[test_indices], Path(data_dir, 'poses_missing_test.pt'))

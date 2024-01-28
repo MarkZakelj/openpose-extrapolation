@@ -2,9 +2,11 @@ import torch
 from fastapi import FastAPI
 from src.model import LitAutoEncoder
 from src.schema import InferenceRequest, Keypoint, InferenceResult
+from paths import MODELS_DIR
+from pathlib import Path
 
 model_name = 'v7-epoch=3-val_loss=0.001993.ckpt'
-best_model_path = f'models/{model_name}'
+best_model_path = Path(MODELS_DIR, model_name)
 
 model = LitAutoEncoder.load_from_checkpoint(best_model_path)
 model.eval()
