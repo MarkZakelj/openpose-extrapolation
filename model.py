@@ -15,27 +15,22 @@ class LitAutoEncoder(L.LightningModule):
         x_hat = self.layers(x)
         x_hat[mask] = x[mask]
         return x_hat
+    
+    def general_step(self, batch, batch_idx, loss_name):
+        x, y = batch
+        x_hat = self.layers(x)
+        loss = nn.functional.mse_loss(x_hat, y)
+        self.log(loss_name, loss)
+        return loss
 
     def training_step(self, batch, batch_idx):
-        x, y = batch
-        x_hat = self.layers(x)
-        loss = nn.functional.mse_loss(x_hat, y)
-        self.log("train_loss", loss)
-        return loss
+        return self.general_step(batch, batch_idx, "train_loss")
     
     def test_step(self, batch, batch_idx):
-        x, y = batch
-        x_hat = self.layers(x)
-        loss = nn.functional.mse_loss(x_hat, y)
-        self.log("test_loss", loss)
-        return loss
+        return self.general_step(batch, batch_idx, "test_loss")
     
     def validation_step(self, batch, batch_idx):
-        x, y = batch
-        x_hat = self.layers(x)
-        loss = nn.functional.mse_loss(x_hat, y)
-        self.log("val_loss", loss)
-        return loss
+        return self.general_step(batch, batch_idx, "val_loss")
 
     def configure_optimizers(self):
         optimizer = optim.AdamW(self.parameters(), 

@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from model import LitAutoEncoder
 from schema import InferenceRequest, Keypoint, InferenceResult
 
-model_name = 'v7-epoch=1-val_loss=0.002388.ckpt'
+model_name = 'v7-epoch=3-val_loss=0.001993.ckpt'
 best_model_path = f'models/{model_name}'
 
 model = LitAutoEncoder.load_from_checkpoint(best_model_path)

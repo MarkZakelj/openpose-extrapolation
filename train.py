@@ -24,7 +24,6 @@ def main():
         filename=DATA_VERSION+'-{epoch}-{val_loss:.6f}'
     )
 
-
     train_loader = DataLoader(dataset_train, batch_size=32, shuffle=True, num_workers=4, persistent_workers=True)
     valid_loader = DataLoader(dataset_valid, batch_size=512, shuffle=False, num_workers=8, persistent_workers=True)
     test_loader = DataLoader(dataset_test, batch_size=512, shuffle=False, num_workers=8, persistent_workers=True)
