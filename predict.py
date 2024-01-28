@@ -4,7 +4,7 @@ from model import LitAutoEncoder
 from schema import InferenceRequest, Keypoint, InferenceResult
 # import xgboost as xgb
 
-model_name = 'skeleton-extrapolation.ckpt'
+model_name = 'v7-epoch=1-val_loss=0.002388.ckpt'
 best_model_path = f'models/{model_name}'
 
 model = LitAutoEncoder.load_from_checkpoint(best_model_path)
@@ -29,6 +29,8 @@ def health():
 def predict(input: InferenceRequest) -> InferenceResult:
     x = []
     neck_points = []
+    # for ppp in input.keypoints[11]:
+    #     print(ppp)
     for body in input.keypoints:
         ps = []
         neckx = body[1].x
@@ -39,14 +41,14 @@ def predict(input: InferenceRequest) -> InferenceResult:
                 ps.extend([keypoint.x - neckx, keypoint.y - necky])
             else:
                 ps.extend([-10.0, -10.0])
-        ps.append(input.height / input.width)
+        # ps.append(input.height / input.width)
         x.append(ps)
     x = torch.tensor(x).to('cpu')
     with torch.no_grad():
         y_hat = model(x)
     keypoints = []
     for i, row in enumerate(y_hat):
-        points = row[:-1].reshape(-1, 2).tolist()
+        points = row.reshape(-1, 2).tolist()
         translated_points = []
         neckx, necky = neck_points[i]
         for point in points:
