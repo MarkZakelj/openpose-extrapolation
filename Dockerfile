@@ -11,9 +11,11 @@ WORKDIR /app
 COPY model.py /app/model.py
 COPY predict.py /app/predict.py
 COPY schema.py /app/schema.py
+COPY models /app/models
 
 EXPOSE 3000
 
-CMD uvicorn predict:app --host 0.0.0.0 --port 3000 --workers 2
+# add --workers <num> to uvicorn command to run with <num> workers
+CMD uvicorn predict:app --host 0.0.0.0 --port 3000
 
 
