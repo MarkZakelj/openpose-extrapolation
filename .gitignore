@@ -1,4 +1,4 @@
 venv
 lightning_logs
-data
+data/v*
 __pycache__
