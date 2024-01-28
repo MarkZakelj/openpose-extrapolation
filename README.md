@@ -4,7 +4,7 @@
 This repository hosts a streamlined neural network designed specifically for extrapolating non-visible keypoints in OpenPose skeleton representations. It serves as a robust solution for enhancing keypoint detection, particularly in scenarios where certain body parts are obscured or off-screen.
 
 ## Getting Started
-- Create a virtual environment and install the requirements using `pip install -r requirements.txt`.
+- Create a python `3.11` virtual environment and install the requirements using `pip install -r requirements.txt`.
 - Run `preprocess.py` to generate augumented data.  
 - Run `train.py` to train the model. Be sure, to match the data version Change the file to change the hyperparameters and data version (`DATA_VERSION` variable).
 - Run `tensorboard --logdir lightning_logs` to view the training progress.  
