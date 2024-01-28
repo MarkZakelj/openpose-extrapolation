@@ -2,8 +2,8 @@ from torch import utils
 from torch.utils.data import DataLoader
 import lightning as L
 from lightning.pytorch.callbacks import ModelCheckpoint
-from dataset import OpenPoseDataset
-from model import LitAutoEncoder
+from src.dataset import OpenPoseDataset
+from src.model import LitAutoEncoder
 from torch.utils.data import Subset
 import torch
 

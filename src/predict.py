@@ -1,7 +1,7 @@
 import torch
 from fastapi import FastAPI
-from model import LitAutoEncoder
-from schema import InferenceRequest, Keypoint, InferenceResult
+from src.model import LitAutoEncoder
+from src.schema import InferenceRequest, Keypoint, InferenceResult
 
 model_name = 'v7-epoch=3-val_loss=0.001993.ckpt'
 best_model_path = f'models/{model_name}'

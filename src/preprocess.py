@@ -1,7 +1,7 @@
 import pandas as pd
 import torch
 from einops import rearrange
-from util import draw_bodypose
+from src.util import draw_bodypose
 from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
