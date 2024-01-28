@@ -1,7 +1,7 @@
 import torch
 from fastapi import FastAPI
-from src.model import LitAutoEncoder
-from src.schema import InferenceRequest, Keypoint, InferenceResult
+from model import LitAutoEncoder
+from schema import InferenceRequest, Keypoint, InferenceResult
 from paths import MODELS_DIR
 from pathlib import Path
 
