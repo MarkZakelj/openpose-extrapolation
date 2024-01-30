@@ -3,6 +3,8 @@
 ## Overview
 This repository hosts a streamlined neural network designed specifically for extrapolating non-visible keypoints in OpenPose skeleton representations. It serves as a robust solution for enhancing keypoint detection, particularly in scenarios where certain body parts are obscured or off-screen.
 
+There's a written blog post about this project, check it out [here](https://medium.com/@MarkZakelj/openpose-skeleton-extrapolation-0ffc9c9bf146).
+
 ## Getting Started
 - Create a python `3.11` virtual environment and install the requirements using `pip install -r requirements.txt`.
 - Run `preprocess.py` to generate augumented data.  
