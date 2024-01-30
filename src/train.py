@@ -12,7 +12,7 @@ DATA_VERSION = 'v7'
 DATA_DIR = Path(DATA_DIR, DATA_VERSION)
 
 def main():
-    autoencoder = SkeletonExtrapolator(dropout=0.5, weight_decay=0.001)
+    extrapolator = SkeletonExtrapolator(dropout=0.5, weight_decay=0.001)
     dataset_train = OpenPoseDataset(DATA_DIR, 'train')
     dataset_valid = OpenPoseDataset(DATA_DIR, 'valid')
     dataset_test = OpenPoseDataset(DATA_DIR, 'test')
@@ -30,7 +30,7 @@ def main():
 
     tb_logger = pl_loggers.TensorBoardLogger(save_dir=ROOT_DIR)
     trainer = L.Trainer(max_epochs=8, callbacks=[checkpoint_callback], logger=tb_logger)
-    trainer.fit(model=autoencoder, train_dataloaders=train_loader, val_dataloaders=valid_loader)
+    trainer.fit(model=extrapolator, train_dataloaders=train_loader, val_dataloaders=valid_loader)
     trainer.test(ckpt_path='best', dataloaders=test_loader)
 
 
