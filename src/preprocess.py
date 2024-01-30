@@ -49,7 +49,7 @@ get_scale = lambda : (random.betavariate(alpha=0.9, beta=1.1)) * 3.5 + 0.05
 REPETITIONS = 2
 res = []
 for n in range(REPETITIONS):
-    p1 = poses.clone()
+    p1 = poses_flipped.clone()
     scale = torch.tensor([get_scale() for _ in range(p1.shape[0])], dtype=torch.float32).unsqueeze(1).unsqueeze(2)
     p1 *= scale
     res.append(p1)
