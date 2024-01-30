@@ -9,9 +9,9 @@ RUN pip install --no-cache-dir lightning fastapi uvicorn
 
 WORKDIR /app
 
-COPY model.py /app/model.py
-COPY predict.py /app/predict.py
-COPY schema.py /app/schema.py
+COPY src/model.py /app/model.py
+COPY src/predict.py /app/predict.py
+COPY src/schema.py /app/schema.py
 COPY models /app/models
 
 EXPOSE 3000
