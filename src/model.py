@@ -1,7 +1,7 @@
 from torch import nn, optim
 import lightning as L
 
-class LitAutoEncoder(L.LightningModule):
+class SkeletonExtrapolator(L.LightningModule):
     def __init__(self, learning_rate=1e-3, weight_decay=1e-5, dropout=0.2):
         super().__init__()
         self.save_hyperparameters()

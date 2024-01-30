@@ -2,7 +2,7 @@ from torch.utils.data import DataLoader
 import lightning as L
 from lightning.pytorch.callbacks import ModelCheckpoint
 from dataset import OpenPoseDataset
-from model import LitAutoEncoder
+from model import SkeletonExtrapolator
 from lightning.pytorch import loggers as pl_loggers
 from paths import DATA_DIR, ROOT_DIR
 from pathlib import Path
@@ -12,7 +12,7 @@ DATA_VERSION = 'v7'
 DATA_DIR = Path(DATA_DIR, DATA_VERSION)
 
 def main():
-    autoencoder = LitAutoEncoder(dropout=0.5, weight_decay=0.001)
+    autoencoder = SkeletonExtrapolator(dropout=0.5, weight_decay=0.001)
     dataset_train = OpenPoseDataset(DATA_DIR, 'train')
     dataset_valid = OpenPoseDataset(DATA_DIR, 'valid')
     dataset_test = OpenPoseDataset(DATA_DIR, 'test')

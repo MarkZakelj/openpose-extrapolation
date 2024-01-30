@@ -1,6 +1,6 @@
 import torch
 from fastapi import FastAPI
-from model import LitAutoEncoder
+from model import SkeletonExtrapolator
 from schema import InferenceRequest, Keypoint, InferenceResult
 from paths import MODELS_DIR
 from pathlib import Path
@@ -8,7 +8,7 @@ from pathlib import Path
 model_name = 'v7-epoch=3-val_loss=0.001993.ckpt'
 best_model_path = Path(MODELS_DIR, model_name)
 
-model = LitAutoEncoder.load_from_checkpoint(best_model_path)
+model = SkeletonExtrapolator.load_from_checkpoint(best_model_path)
 model.eval()
 model.to('cpu')
 
