@@ -2,7 +2,6 @@ import torch
 from torch.utils.data import Dataset
 from pathlib import Path
 
-
 class OpenPoseDataset(Dataset):
     def __init__(self, data_dir, data_type):
         self.poses = torch.load(Path(data_dir, f'poses_{data_type}.pt'))
