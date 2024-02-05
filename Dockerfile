@@ -7,11 +7,9 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu
 RUN pip install --no-cache-dir lightning fastapi uvicorn
 
-WORKDIR /app
+WORKDIR /app/src
 
-COPY src/model.py /app/model.py
-COPY src/predict.py /app/predict.py
-COPY src/schema.py /app/schema.py
+COPY src /app/src
 COPY models /app/models
 
 EXPOSE 3000
