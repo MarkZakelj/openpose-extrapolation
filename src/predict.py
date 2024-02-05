@@ -1,14 +1,21 @@
 import torch
 from fastapi import FastAPI
 from model import SkeletonExtrapolator
+from vae import SkeletonVAE
 from schema import InferenceRequest, Keypoint, InferenceResult
 from paths import MODELS_DIR
 from pathlib import Path
+import os
 
-model_name = 'v7-epoch=3-val_loss=0.001993.ckpt'
+model_name = os.environ.get('MODEL_NAME', 'v7-epoch=3-val_loss=0.001993.ckpt')
+model_type = 'vae' if model_name.startswith('vae') else 'fcn'
 best_model_path = Path(MODELS_DIR, model_name)
 
-model = SkeletonExtrapolator.load_from_checkpoint(best_model_path)
+model = None
+if model_type == 'vae':
+    model = SkeletonVAE.load_from_checkpoint(best_model_path)
+else:
+    model = SkeletonExtrapolator.load_from_checkpoint(best_model_path)
 model.eval()
 model.to('cpu')
 
