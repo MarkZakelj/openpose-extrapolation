@@ -13,6 +13,7 @@ COPY src /app/src
 COPY models /app/models
 
 EXPOSE 3000
+ENV LOGLEVEL=INFO
 
 # add --workers <num> to uvicorn command to run with <num> workers
 CMD uvicorn predict:app --host 0.0.0.0 --port 3000

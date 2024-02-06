@@ -6,9 +6,13 @@ from schema import InferenceRequest, Keypoint, InferenceResult
 from paths import MODELS_DIR
 from pathlib import Path
 import os
+import logging
+
+logger = logging.getLogger('uvicorn')
 
 model_name = os.environ.get('MODEL_NAME', 'v7-epoch=3-val_loss=0.001993.ckpt')
 model_type = 'vae' if model_name.startswith('vae') else 'fcn'
+logger.info(f'model_name: {model_name}')
 best_model_path = Path(MODELS_DIR, model_name)
 
 model = None
