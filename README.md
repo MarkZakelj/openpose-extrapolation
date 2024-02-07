@@ -26,4 +26,7 @@ Utilizing the [dw-pose](https://github.com/IDEA-Research/DWPose) model for OpenP
 
 To address these constraints, we introduce an enhancement model designed to operate as a post-processing step following dw-pose predictions. This model is particularly adept at inferring and reconstructing the full skeleton, even in cases where parts of the subject are off-screen or obscured. By employing this model, we can extend the capabilities of dw-pose, enabling more comprehensive and accurate skeleton predictions suitable for a wider range of applications, including those requiring full-body representations.
 
+## Authors
+- [Mark Zakelj](https://github.com/MarkZakelj)
+
 
